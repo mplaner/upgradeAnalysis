@@ -37,7 +37,7 @@ void Loop()
   char hname[40];
   for(int i=0;i<nEta;i++)
     {
-      sprintf(hname,"ratio_pt_eta_%1.2f",etaVal[i]);
+      sprintf(hname,"ratio_pt_#eta_%1.2f",etaVal[i]);
       ratio_ptHist[i] = new TH1F(hname,hname,100,0,3);
     }
   if (h->fChain == 0) return;
@@ -168,11 +168,17 @@ void Loop()
 	 }
      }
    TFile * temp = new TFile("testout.root","RECREATE");
+   ofstream fileA;
+   fileA.open("plots.txt");
+   if(fileA.is_open())
+     std::cout << "writing to file" << std::endl;
+   fileA << "starting energy resolution" << std::endl;
+   fileA << "etaVal " << " min " << " max " << " effSigma " << std::endl;
    for(int i=0;i<nEta;i++)
      {
        float min=0,max=0, effSigma=0;
        effSigma = GetEffSigma(.68,ratio_ptVect[i], min, max);
-       std::cout << "etaVal: " << etaVal[i] << " min : " << min << " max " << max << " effSigma " << effSigma << std::endl;
+       fileA << etaVal[i] << " " << min << " " << max << " " << effSigma << std::endl;
        ratio_ptHist[i]->Write();
      }
    std::cout << "nGEB: " << nGEB << " nGEE: " << nGEE << std::endl;

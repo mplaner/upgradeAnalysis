@@ -13,9 +13,9 @@ const int EB     =  1;
 
 const int type = HGG;
 const int nEta = 6;
-const double etaMin[nEta] = {0.000, 0.500, 1.000, 1.566, 1.870, 2.180};
-const double etaMax[nEta] = {0.500, 1.000, 1.444, 1.870, 2.180, 2.500};
-const double etaVal[nEta] = {0.00,  0.75,  1.222, 1.718, 2.025, 2.340};
+const float etaMin[nEta] = {0.000, 0.500, 1.000, 1.566, 1.870, 2.180};
+const float etaMax[nEta] = {0.500, 1.000, 1.444, 1.870, 2.180, 2.500};
+const float etaVal[nEta] = {0.00,  0.75,  1.222, 1.718, 2.025, 2.340};
 const int  etaColor[nEta] = {1,2,4,6,8,9};
 
 int GetEtaBin(double ETA);

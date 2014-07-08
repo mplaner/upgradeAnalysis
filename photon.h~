@@ -39,6 +39,7 @@ class higgs_gg {
   
   // Declaration of leaf types
   Float_t         ecalenergy[200];
+  Float_t         pt[200];
   Double_t        esenergy[200];
   Double_t        rawenergy[200];
   Double_t        eta[200];
@@ -52,7 +53,7 @@ class higgs_gg {
   
   Double_t        GEN_eta[5];
   Double_t        GEN_phi[5];
-  Double_t        GEN_pt[5];
+  Float_t         GEN_pt[5];
   Int_t           GEN_id[5];
   Int_t           NGEN;
   Int_t           run_number;
@@ -63,6 +64,7 @@ class higgs_gg {
   TBranch        *b_esenergy;
   TBranch        *b_rawenergy;
   TBranch        *b_ecalenergy;   //!
+  TBranch        *b_pt;
   TBranch        *b_5x5_energy;
   TBranch        *b_3x3_energy;
   TBranch        *b_r9;
@@ -279,6 +281,7 @@ void higgs_gg::Init(TTree *tree)
    fChain->SetBranchAddress("pEsenergy", &esenergy, &b_esenergy);
    fChain->SetBranchAddress("pRawenergy", &rawenergy, &b_rawenergy);
    fChain->SetBranchAddress("pSC_energy", &ecalenergy, &b_ecalenergy);
+   fChain->SetBranchAddress("pPt", &pt, &b_pt);
    fChain->SetBranchAddress("p5x5_energy", &e5, &b_5x5_energy);
    fChain->SetBranchAddress("p3x3_energy", &e3, &b_3x3_energy);
    fChain->SetBranchAddress("pR9", &r9, &b_r9);
