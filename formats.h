@@ -1,8 +1,8 @@
 #include "root.cc"
 #include "params.h"
 
-void formatHisto(int logY, const char* legendTitle, string * legendNames, const char* xTitle, float xMin, float xMax, const char* yTitle, int *colors, TH1F** hist, const int nPoints);
-void formatHisto(int logY, const char* legendTitle, string * legendNames, const char* xTitle, float xMin, float xMax, const char* yTitle, int *colors, TH1F** hist, const int nPoints)
+void formatHisto(int logY, const char* legendTitle, string * legendNames, const char* xTitle, float xMin, float xMax, const char* yTitle, int *colors, TH1F** hist, const int nPoints const char* filename);
+void formatHisto(int logY, const char* legendTitle, string * legendNames, const char* xTitle, float xMin, float xMax, const char* yTitle, int *colors, TH1F** hist, const int nPoints,const char* filename)
 {
   setTDRStyle1(1,1,0,logY);//gridX/Y, logX/Y
   gStyle->TStyle::SetOptStat(0);
@@ -44,16 +44,19 @@ void formatHisto(int logY, const char* legendTitle, string * legendNames, const 
   c1->cd();
   TLatex T1;
   T1.SetTextSize(.04014599);
-  T1.DrawLatex(0.8,0.43,"CMS Simulation Preliminary"); //follows x-axis and y-axis values for position...
+  T1.SetNDC();
+  T1.DrawLatex(0.45,0.95,"CMS Simulation Preliminary"); //follows x-axis and y-axis values for position...
   T1.SetTextSize(.035);
-  T1.DrawLatex(0.5,0.18,"Aging model sys uncert.: ~30%");
-  T1.DrawLatex(0.5,0.15,"Run1 reconstruction");
-  T1.DrawLatex(0.5,0.12,"Prompt photons");
+  T1.DrawLatex(0.2,0.5,"Aging model sys uncert.: ~30%");
+  T1.DrawLatex(0.2,0.45,"Run1 reconstruction");
+  T1.DrawLatex(0.2,0.40,"Prompt photons");
   
-  string ss1="PLOTS/histoTest.png";
-  c1->SaveAs(ss1.c_str());
-  ss1="PLOTS/C/histoTest.C";
-  c1->SaveAs(ss1.c_str());
+  char  ss1[50];
+  sprintf(ss1,"PLOTS/%s.png",filename);
+  std::cout << ss1 << std::endl;
+  c1->SaveAs(ss1);
+  sprintf(ss1,"PLOTS/C/%s.C",filename);
+  c1->SaveAs(ss1);
   c1->Clear();
 }
 
