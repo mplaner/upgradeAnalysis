@@ -185,7 +185,7 @@ void Loop()
        sprintf(tempName,"eta %1.2f",etaVal[i]);
        legName[i] = tempName;
      }
-   formatHisto(0,"<PU>: 50, int lumi: 0fb^{-1}", legName, "Ratio (reco pt)/(gen pt)","PDF", colors,&ratio_ptHist[0],nEta);
+   formatHisto(0,"<PU>: 50, int lumi: 0fb^{-1}", legName, "Ratio (reco pt)/(gen pt)",.5,1.3,"PDF", colors,&ratio_ptHist[0],nEta);
    //formatHisto(0, "legendary", legName);
    std::cout << "nGEB: " << nGEB << " nGEE: " << nGEE << std::endl;
 }
