@@ -1,8 +1,8 @@
 #include "root.cc"
 #include "params.h"
 
-void formatHisto(int logY, char* legendTitle, string * legendNames, char* xTitle, char* yTitle, int *colors, TH1F** hist, const int nPoints);
-void formatHisto(int logY, char* legendTitle, string * legendNames, char* xTitle, char* yTitle, int *colors, TH1F** hist, const int nPoints)
+void formatHisto(int logY, char* legendTitle, string * legendNames, char* xTitle, float xMin, float xMax, char* yTitle, int *colors, TH1F** hist, const int nPoints);
+void formatHisto(int logY, char* legendTitle, string * legendNames, char* xTitle, float xMin, float xMax,char* yTitle, int *colors, TH1F** hist, const int nPoints)
 {
   setTDRStyle1(1,1,0,logY);//gridX/Y, logX/Y
   gStyle->TStyle::SetOptStat(0);
@@ -28,7 +28,7 @@ void formatHisto(int logY, char* legendTitle, string * legendNames, char* xTitle
 	  hist[j]->GetXaxis()->SetTitle(xTitle);
 	  hist[j]->GetYaxis()->SetTitle(yTitle);
 	  hist[j]->GetYaxis()->SetTitleOffset(1.3);
-	  hist[j]->GetXaxis()->SetRangeUser(.5,1.3); //make this automatic
+	  hist[j]->GetXaxis()->SetRangeUser(xMin,xMax); //make this automatic
 	  /*set y range automatically too*/
 	  hist[j]->DrawNormalized();
 	}
