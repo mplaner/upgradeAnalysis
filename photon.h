@@ -9,7 +9,6 @@
 #define higgs_gg_h
 
 
-#include "sigmaEff.C"
 #include <string.h>
 #include <TROOT.h>
 #include <TH2.h>

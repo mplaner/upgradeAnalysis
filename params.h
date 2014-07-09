@@ -1,3 +1,6 @@
+#ifndef params
+#define params
+
 const double EEMIN= 1.566,EBMAX=1.444; //cuts for gap between EE and EB 
 const double EEMAX= 2.5, EBMIN=0; //edge of detector (can be used to limit eta range for comparison plots)
 const double drCut= .15; //cut on deltaR (optimized for EB pu140 cut =.21) 
@@ -23,7 +26,7 @@ int GetEtaBin(double ETA)
 {
   for(int i=0; i<nEta;i++)
     {
-      if(ETA>etaMin[i]&&ETA<etaMax[i])
+      if(std::abs(ETA)>etaMin[i]&&std::abs(ETA)<etaMax[i])
 	return(i);
     }
   return(-1);
@@ -41,8 +44,8 @@ float dR(double eta1, double phi1, double eta2, double phi2)
   return sqrt((eta1-eta2)*(eta1-eta2) + (phi1-phi2)*(phi1-phi2));
 }
 
-float GetEffSigma(float interval, vector<float> v, float &xmin, float &xmax);
-float GetEffSigma(float interval, vector<float> v, float &xmin, float &xmax)
+float GetEffSigma(float interval, std::vector<float> v, float &xmin, float &xmax);
+float GetEffSigma(float interval, std::vector<float> v, float &xmin, float &xmax)
 {
   //sort vector low to high
   std::sort(v.begin(),v.end());
@@ -67,3 +70,4 @@ float GetEffSigma(float interval, vector<float> v, float &xmin, float &xmax)
   //return effective sigma
   return(width/2);  
 }
+#endif

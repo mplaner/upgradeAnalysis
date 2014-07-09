@@ -5,6 +5,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
+#include <fstream>
 #include <iostream>
 #include <TH2.h>
 #include <TStyle.h>
@@ -12,7 +13,6 @@
 
 
 void Loop();
-
 int main()
 {
   Loop();
@@ -24,7 +24,7 @@ void Loop()
   TH1F *etaHist;
   TH1F *ratio_ptHist[nEta];
   vector <float> ratio_ptVect[nEta];
-  TTree *b;
+  TTree *b=0;
 
   higgs_gg * h = new higgs_gg(b);
   
@@ -36,6 +36,8 @@ void Loop()
       int  CHILD  = 22;
     }
   char hname[40];
+  etaHist = new TH1F("pEta","pEta",100,-3.2,3.2);
+  drHist = new TH1F("dr","dr",10000,0,1);
   for(int i=0;i<nEta;i++)
     {
       sprintf(hname,"ratio_pt_#eta_%1.2f",etaVal[i]);
@@ -140,7 +142,7 @@ void Loop()
 	     if(GetEtaBin(h->eta[i])==-1) //checks photon is in detector
 	       continue;
 	     temp_deltaR[l] = dR(g_eta[l],g_phi[l],h->eta[i],h->phi[i]);
-	     //drHist->Fill(temp_deltaR[l]);
+	     drHist->Fill(temp_deltaR[l]);
 	     if(p_deltaR[l]> temp_deltaR[l]) //if better dR
 	       {
 		 p_deltaR[l]    = temp_deltaR[l];
@@ -159,13 +161,14 @@ void Loop()
 	   /****check that p_energy is filled*****/
 	   if(p_energy[l]) 
 	     {
+	       etaHist->Fill(p_eta[l]);
 	       ratio_ptHist[GetEtaBin(p_eta[l])]->Fill(p_energy[l]/g_pt[l]/cosh(g_eta[l]));
 	       ratio_ptVect[GetEtaBin(p_eta[l])].push_back(p_energy[l]/g_pt[l]/cosh(g_eta[l]));
 	     }
 	 }
      }
    TFile * temp = new TFile("testout.root","RECREATE");
-   ofstream fileA;
+   std::ofstream fileA;
    fileA.open("plots.txt");
    if(fileA.is_open())
      std::cout << "writing to file" << std::endl;
@@ -185,7 +188,12 @@ void Loop()
        sprintf(tempName,"eta %1.2f",etaVal[i]);
        legName[i] = tempName;
      }
+   /**format hist example: formatHisto(uselogY,"name for plot", array of strings for legend names, "xtitle",xmin,xmax,"ytitle",array of ints for colors, pointer to histogram, number of histograms to be plotted on same canvas*/
    formatHisto(0,"<PU>: 50, int lumi: 0fb^{-1}", legName, "Ratio (reco pt)/(gen pt)",.5,1.3,"PDF", colors,&ratio_ptHist[0],nEta);
+   legName[0]="#eta distribution";
+   formatHisto(0,"<PU>: 50, int lumi: 0fb^{-1}", legName, "#eta of matched reco photons",-3.2,3.2,"PDF", colors,&etaHist,1);
+   
    //formatHisto(0, "legendary", legName);
+   temp->Close();
    std::cout << "nGEB: " << nGEB << " nGEE: " << nGEE << std::endl;
 }

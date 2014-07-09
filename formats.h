@@ -1,8 +1,8 @@
 #include "root.cc"
 #include "params.h"
 
-void formatHisto(int logY, char* legendTitle, string * legendNames, char* xTitle, float xMin, float xMax, char* yTitle, int *colors, TH1F** hist, const int nPoints);
-void formatHisto(int logY, char* legendTitle, string * legendNames, char* xTitle, float xMin, float xMax,char* yTitle, int *colors, TH1F** hist, const int nPoints)
+void formatHisto(int logY, const char* legendTitle, string * legendNames, const char* xTitle, float xMin, float xMax, const char* yTitle, int *colors, TH1F** hist, const int nPoints);
+void formatHisto(int logY, const char* legendTitle, string * legendNames, const char* xTitle, float xMin, float xMax, const char* yTitle, int *colors, TH1F** hist, const int nPoints)
 {
   setTDRStyle1(1,1,0,logY);//gridX/Y, logX/Y
   gStyle->TStyle::SetOptStat(0);
@@ -59,8 +59,8 @@ void formatHisto(int logY, char* legendTitle, string * legendNames, char* xTitle
 
 //"Energy resolution, #sigma_{eff}(E)/E"
 /*used to format any graph which is produced with nEta points on the x-axis */
-void formatEtaGraph(int logY, char* legendTitle, string * legendNames, char * yTitle, int * colors, float *data, const int nPoints );
-void formatEtaGraph(int logY, char* legendTitle, string * legendNames, char * yTitle, int * colors, float *data, const int nPoints )
+void formatEtaGraph(int logY, const char* legendTitle, string * legendNames,const char * yTitle, int * colors, float *data[], const int nPoints );
+void formatEtaGraph(int logY, const char* legendTitle, string * legendNames,const char * yTitle, int * colors, float *data[], const int nPoints )
 {
 
   setTDRStyle1(1,1,0,logY);//gridX/Y, logX/Y
@@ -106,18 +106,14 @@ void formatEtaGraph(int logY, char* legendTitle, string * legendNames, char * yT
       leg->AddEntry(gr_res[j],ll,"pl");
     }
   leg->Draw("same");
-  TLatex * latex2 = new TLatex(1.0,0.25,"CMS Simulation Preliminary");
-  latex2->SetTextSize(0.04014599);
-  latex2->Draw("same");
-  TLatex * latex2 = new TLatex(0.2,0.08,"Aging model sys uncert.: ~30%");
-  latex2->SetTextSize(0.035);
-  latex2->Draw("same");
-  TLatex * latex2 = new TLatex(0.2,0.07,"Run1 reconstruction");
-  latex2->SetTextSize(0.035);
-  latex2->Draw("same");
-  TLatex * latex2 = new TLatex(0.2,0.06,"Prompt photons");
-  latex2->SetTextSize(0.035);
-  latex2->Draw("same");
+  TLatex T1;
+  T1.SetTextSize(.04014599);
+  T1.DrawLatex(1.0,0.25,"CMS Simulation Preliminary"); //follows x-axis and y-axis values for position...
+  T1.SetTextSize(.035);
+  T1.DrawLatex(0.2,0.08,"Aging model sys uncert.: ~30%");
+  T1.DrawLatex(0.2,0.07,"Run1 reconstruction");
+  T1.DrawLatex(0.2,0.06,"Prompt photons");
+  
   string ss1="PLOTS/graph_test.png";
   c1->SaveAs(ss1.c_str());
   ss1="PLOTS/C/graph_test.C";

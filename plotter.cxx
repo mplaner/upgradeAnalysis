@@ -3,7 +3,7 @@
 #include "formats.h"
 using namespace std;
 
-int main()
+//int main()
 {
   const int plot_resolution_michael=1;
   
