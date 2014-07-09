@@ -1,6 +1,7 @@
 #define zAlexey_cxx
 #include "photon.h"
 #include "params.h"
+#include "formats.h"
 #include <cmath>
 #include <string>
 #include <vector>
@@ -138,24 +139,20 @@ void Loop()
 	       continue;
 	     if(GetEtaBin(h->eta[i])==-1) //checks photon is in detector
 	       continue;
-	     //	     std::cout << "nEntry : " << jentry << " nGen " << l << std::endl;
-	     /*****fix dR later *********/	
 	     temp_deltaR[l] = dR(g_eta[l],g_phi[l],h->eta[i],h->phi[i]);
-	     //std::cout << "temp dr: " << temp_deltaR[l] << " dr cut: " << p_deltaR[l] << std::endl;
 	     //drHist->Fill(temp_deltaR[l]);
 	     if(p_deltaR[l]> temp_deltaR[l]) //if better dR
 	       {
-		   //     std::cout << jentry << " ngen : " << l << " delta r: " << temp_deltaR[l] << std::endl;
-		   p_deltaR[l]    = temp_deltaR[l];
-		   p_energy[l]    = h->ecalenergy[i];
-		   p_eta[l]       = h->eta[i];
-		   p_phi[l]       = h->phi[i];
-		   //p_r9[l]        = h->PHO_r9[i];
-		   if(std::abs(p_eta[l])>EEMIN&&std::abs(p_eta[l])<EEMAX)
-		     subDet[l]=EE;
-		   if(std::abs(p_eta[l])>EBMIN&&std::abs(p_eta[l])<EBMAX)
-		     subDet[l]=EB;
-		 }
+		 p_deltaR[l]    = temp_deltaR[l];
+		 p_energy[l]    = h->ecalenergy[i];
+		 p_eta[l]       = h->eta[i];
+		 p_phi[l]       = h->phi[i];
+		 //p_r9[l]        = h->PHO_r9[i];
+		 if(std::abs(p_eta[l])>EEMIN&&std::abs(p_eta[l])<EEMAX)
+		   subDet[l]=EE;
+		 if(std::abs(p_eta[l])>EBMIN&&std::abs(p_eta[l])<EBMAX)
+		   subDet[l]=EB;
+	       }
 	   }
        for(int l=0; l<nPhotons; l++)
 	 {
@@ -174,12 +171,21 @@ void Loop()
      std::cout << "writing to file" << std::endl;
    fileA << "starting energy resolution" << std::endl;
    fileA << "etaVal " << " min " << " max " << " effSigma " << std::endl;
+   
+   //   string legName[] = {"<PU>: 50, int lumi: 0fb^{-1}"};
+   string legName[nEta];
+   int colors[nEta] = {1,2,4,5,6,8};
    for(int i=0;i<nEta;i++)
      {
        float min=0,max=0, effSigma=0;
        effSigma = GetEffSigma(.68,ratio_ptVect[i], min, max);
        fileA << etaVal[i] << " " << min << " " << max << " " << effSigma << std::endl;
        ratio_ptHist[i]->Write();
+       char tempName[40];
+       sprintf(tempName,"eta %1.2f",etaVal[i]);
+       legName[i] = tempName;
      }
+   formatHisto(0,"<PU>: 50, int lumi: 0fb^{-1}", legName, "Ratio (reco pt)/(gen pt)","PDF", colors,&ratio_ptHist[0],nEta);
+   //formatHisto(0, "legendary", legName);
    std::cout << "nGEB: " << nGEB << " nGEE: " << nGEE << std::endl;
 }

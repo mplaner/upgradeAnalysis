@@ -38,6 +38,7 @@ class higgs_gg {
   
   // Declaration of leaf types
   Float_t         ecalenergy[200];
+  Float_t         photonenergy[200];
   Float_t         pt[200];
   Double_t        esenergy[200];
   Double_t        rawenergy[200];
@@ -46,6 +47,10 @@ class higgs_gg {
   Float_t         e3[200];
   Float_t         e5[200];
   Float_t         r9[200];
+  Float_t         sieie[200];
+  Float_t         ecalIso[200];
+  Float_t         hcalIso[200];
+  Float_t         trkIso[200];
   Int_t           p_size;
 
   
@@ -62,11 +67,16 @@ class higgs_gg {
   // List of branches
   TBranch        *b_esenergy;
   TBranch        *b_rawenergy;
+  TBranch        *b_photonenergy;
   TBranch        *b_ecalenergy;   //!
   TBranch        *b_pt;
   TBranch        *b_5x5_energy;
   TBranch        *b_3x3_energy;
   TBranch        *b_r9;
+  TBranch        *b_sieie;
+  TBranch        *b_ecalIso;
+  TBranch        *b_hcalIso;
+  TBranch        *b_trkIso;
   TBranch        *b_p_size;
   TBranch        *b_g_eta;
   TBranch        *b_g_phi;
@@ -82,133 +92,11 @@ class higgs_gg {
   
   higgs_gg(TTree *tree);
   virtual ~higgs_gg();
-  virtual void      FormatHisto(TH1F *hist, int color,const char* type);
-  virtual void      FormatHisto2(TH2D *hist, const char *type);
   virtual Int_t     GetEntry(Long64_t entry);
   virtual Long64_t  LoadTree(Long64_t entry);
   virtual void      Init(TTree *tree); //particle is particle id
   virtual int       GetEtaBin(double eta);
-  virtual double    WriteHisto(TH1F* hist,int pu,int aging,const char* type,const char* logplot,double xmin,double xmax);
-  virtual double    WriteProfile(TProfile* hist,int pu,int aging,const char* type,double xmin,double xmax);
-};
-
-
-void higgs_gg::FormatHisto(TH1F *hist,int color, const char* type)
-{
-  hist->SetLineWidth(1.5);
-  hist->SetLineColor(color);
-  if(!strcmp(type,"size"))
-    hist->GetXaxis()->SetTitle("Number of recoPhotons per Event");
-  if(!strcmp(type,"ratio"))
-    hist->GetXaxis()->SetTitle("Energy Normalized by Gen Energy");
-  if(!strcmp(type,"energy"))
-    hist->GetXaxis()->SetTitle("Energy (GeV)");
-  if(!strcmp(type,"inv"))
-    hist->GetXaxis()->SetTitle("Invariant mass of highest pt recoPhoton pair (GeV)");
-  if(!strcmp(type,"r9"))
-    hist->GetXaxis()->SetTitle("R9 Value");
-  //if(type=="eta"||type=="phi"||type=="deltaR")
-  else 
-    hist->GetXaxis()->SetTitle(type);
-  hist->GetYaxis()->SetTitle("Counts");
-  hist->GetYaxis()->SetTitleOffset(1.3);
-  
-}
-void higgs_gg::FormatHisto2(TH2D *hist, const char* type)
-{
-  if(!strcmp(type,"etaprof"))
-    {
-      hist->GetXaxis()->SetTitle("Energy Normalized by Gen Energy");
-      hist->GetYaxis()->SetTitle("Eta");
-    }
-  if(!strcmp(type,"energyprof"))
-    {
-      hist->GetXaxis()->SetTitle("Energy Normalized by Gen Energy");
-      hist->GetYaxis()->SetTitle("Gen E (GeV)");
-    }
-}
-
-
-
-double higgs_gg::WriteHisto(TH1F* hist,int pu,int aging, const char* type,const char* logplot, double xmin, double xmax)
-{
-  TCanvas c1;
-  char pngName[40];
- 
-  std::cout << "writing hist: " << type << std::endl;
-  if(hist->GetEntries()<10)
-    {
-      std::cout << "not enough entries, skipping plot " << std::endl;
-      return(-1);
-    }
-  
-  hist->Draw();
-  
-  gStyle->SetOptStat(1111110);
- 
-  sprintf(pngName,"for_francesca/%s.png",type);
-  if(xmin==0)
-    xmin=hist->GetXaxis()->GetXmin();
-  if(xmax==0)
-    xmax=hist->GetXaxis()->GetXmax();
-  //if(type=="nphotons")
-  hist->GetXaxis()->SetRangeUser(xmin,xmax);
-  gStyle->SetStatX(.95);
-  gStyle->SetStatW(.3);
-  gStyle->SetStatY(.92);
-  gStyle->SetStatH(.2);
-  c1.UseCurrentStyle();
-  c1.SetLogy();
-  hist->Draw();
-  c1.UseCurrentStyle();
-  if(!strcmp(logplot,"logy"))
-    c1.SetLogy(1);
-  c1.SaveAs(pngName);
-  return(1);
-}
-
-double higgs_gg::WriteProfile(TProfile* hist,int pu,int aging, const char* type, double xmin, double xmax)
-{
-  TCanvas c1;
-  char pngName[40];
-  /*
-  double pos=3,neg=5; //plus and minus *sigma for fit
-  TF1* fun = (TF1*)FormatFit("fun",hist->GetMean(), hist->GetMaximum());
-  
-  if(aging>=1000)
-    pos=1.5;
-  //  pos=2.0;
-  //if(pu==70)
-  // pos=2.;
-  */
-  std::cout << "writing hist: " << type << std::endl;
-  if(hist->GetEntries()<10)
-    {
-      std::cout << "not enough entries, skipping plot " << std::endl;
-      return(-1);
-    }
-  hist->Draw();
-  
-  gStyle->SetOptStat(1111110);
-    
-  sprintf(pngName,"aging_studies/%s_pu%i_age%i.png",type,pu,aging);
-  if(xmin==0)
-    xmin=hist->GetXaxis()->GetXmin();
-  if(xmax==0)
-    xmax=hist->GetXaxis()->GetXmax();
-  //if(type=="nphotons")
-  hist->GetXaxis()->SetRangeUser(xmin,xmax);
-  gStyle->SetStatX(.95);
-  gStyle->SetStatW(.3);
-  gStyle->SetStatY(.92);
-  gStyle->SetStatH(.2);
-  c1.UseCurrentStyle();
-  c1.SetLogy();
-  hist->Draw();
-  c1.UseCurrentStyle();
-  c1.SaveAs(pngName);
-  return(1);
-}
+  };
 
 higgs_gg::higgs_gg(TTree *tree) : fChain(0)  
 {
@@ -280,10 +168,15 @@ void higgs_gg::Init(TTree *tree)
    fChain->SetBranchAddress("pEsenergy", &esenergy, &b_esenergy);
    fChain->SetBranchAddress("pRawenergy", &rawenergy, &b_rawenergy);
    fChain->SetBranchAddress("pSC_energy", &ecalenergy, &b_ecalenergy);
+   fChain->SetBranchAddress("pPhoton_energy", &photonenergy, &b_photonenergy);
    fChain->SetBranchAddress("pPt", &pt, &b_pt);
    fChain->SetBranchAddress("p5x5_energy", &e5, &b_5x5_energy);
    fChain->SetBranchAddress("p3x3_energy", &e3, &b_3x3_energy);
    fChain->SetBranchAddress("pR9", &r9, &b_r9);
+   fChain->SetBranchAddress("pSigmaIetaIeta", &sieie, &b_sieie);
+   fChain->SetBranchAddress("p_ecalRecHitSumEtConeDR03", &ecalIso, &b_ecalIso);
+   fChain->SetBranchAddress("p_hcalTowerSumEtConeDR03", &hcalIso, &b_hcalIso);
+   fChain->SetBranchAddress("p_trkSumPtSolidConeDR03", &trkIso, &b_trkIso);
    fChain->SetBranchAddress("pEta", &eta, &b_eta);
    fChain->SetBranchAddress("pPhi", &phi, &b_phi);
    fChain->SetBranchAddress("psize", &p_size, &b_p_size);
