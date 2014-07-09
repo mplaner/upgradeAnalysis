@@ -20,6 +20,10 @@ int main()
 
 void Loop()
 {
+  
+  TH1F * r9Hist[2];
+//  TH1F * r9Hist= new TH1F("0/fb","barrel Zpeak",20,0,1);
+//  TH1F * r9Hist1= new TH1F("fb","barrel Zpeak",20,0,1);
   TH1F* drHist;
   TH1F *etaHist;
   TH1F *ratio_ptHist[nEta];
@@ -38,6 +42,8 @@ void Loop()
   char hname[40];
   etaHist = new TH1F("pEta","pEta",100,-3.2,3.2);
   drHist = new TH1F("dr","dr",10000,0,1);
+  r9Hist[0]=new TH1F("hname","hname",20,0,1.2);
+  r9Hist[1]=new TH1F("hname1","hname1",20,0,1.2);
   for(int i=0;i<nEta;i++)
     {
       sprintf(hname,"ratio_pt_#eta_%1.2f",etaVal[i]);
@@ -52,6 +58,7 @@ void Loop()
    double g_pt[nPhotons], p_energy[nPhotons];//recophotons matched to genPhotons  
    double p_eta[nPhotons],g_eta[nPhotons];
    double p_phi[nPhotons], g_phi[nPhotons];
+   double p_3x3[nPhotons], p_5x5[nPhotons];
    double p_r9[nPhotons];
    double p_deltaR[nPhotons];
    double temp_deltaR[nPhotons];
@@ -78,6 +85,8 @@ void Loop()
 	   g_pt[i]=0;
 	   p_r9[i]=0;
 	   p_deltaR[i]=drCut;
+           p_3x3[i]=-99;
+           p_5x5[i]=-99;
 	   temp_deltaR[i]=0;
 	 }
        int nGen=0;
@@ -135,9 +144,10 @@ void Loop()
        for(int l=0;l<nPhotons;l++)
 	 for(int i=0; i<h->p_size; i++)
 	   {
-	     if(!g_pt[l]) //if good gen phoctron
-	       continue;
 	     if(h->ecalenergy[i]/cosh(h->eta[i])<p_ptCut) //apply ptCut
+	       continue;
+             r9Hist[0]->Fill(h->e3[i]/h->e5[i]);
+	     if(!g_pt[l]) //if good gen phoctron
 	       continue;
 	     if(GetEtaBin(h->eta[i])==-1) //checks photon is in detector
 	       continue;
@@ -149,7 +159,9 @@ void Loop()
 		 p_energy[l]    = h->ecalenergy[i];
 		 p_eta[l]       = h->eta[i];
 		 p_phi[l]       = h->phi[i];
-		 //p_r9[l]        = h->PHO_r9[i];
+                 p_3x3[l]       =h->e3[i];
+                 p_5x5[l]       =h->e5[i];		
+                 //p_r9[l]        = h->PHO_r9[i];
 		 if(std::abs(p_eta[l])>EEMIN&&std::abs(p_eta[l])<EEMAX)
 		   subDet[l]=EE;
 		 if(std::abs(p_eta[l])>EBMIN&&std::abs(p_eta[l])<EBMAX)
@@ -164,6 +176,7 @@ void Loop()
 	       etaHist->Fill(p_eta[l]);
 	       ratio_ptHist[GetEtaBin(p_eta[l])]->Fill(p_energy[l]/g_pt[l]/cosh(g_eta[l]));
 	       ratio_ptVect[GetEtaBin(p_eta[l])].push_back(p_energy[l]/g_pt[l]/cosh(g_eta[l]));
+	       r9Hist[1]->Fill(p_3x3[l]/p_5x5[l]);
 	     }
 	 }
      }
@@ -188,12 +201,17 @@ void Loop()
        sprintf(tempName,"eta %1.2f",etaVal[i]);
        legName[i] = tempName;
      }
+   string legendname[2]={"RECON_PHOTON", "GEN_MATCH"};
    /**format hist example: formatHisto(uselogY,"name for plot", array of strings for legend names, "xtitle",xmin,xmax,"ytitle",array of ints for colors, pointer to histogram, number of histograms to be plotted on same canvas*/
    formatHisto(0,"<PU>: 50, int lumi: 0fb^{-1}", legName, "Ratio (reco pt)/(gen pt)",.5,1.3,"PDF", colors,&ratio_ptHist[0],nEta);
    legName[0]="#eta distribution";
    formatHisto(0,"<PU>: 50, int lumi: 0fb^{-1}", legName, "#eta of matched reco photons",-3.2,3.2,"PDF", colors,&etaHist,1);
-   
+   formatHisto(0,"<PU>: 50, R9 DISTRIBUTION",legendname," #R9 of photons",0,1.2,"PDF", colors,&r9Hist[0],2);
+ //  r9Hist->Write();
    //formatHisto(0, "legendary", legName);
+    
+//   r9Hist1->Draw();
+ //  r9Hist->Draw();
    temp->Close();
    std::cout << "nGEB: " << nGEB << " nGEE: " << nGEE << std::endl;
 }
