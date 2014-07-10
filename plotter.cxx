@@ -3,7 +3,7 @@
 #include "formats.h"
 using namespace std;
 
-//int main()
+int PlotFromText(const char * filename)
 {
   const int plot_resolution_michael=1;
   
@@ -33,19 +33,25 @@ using namespace std;
       std::string points[nPoints];
       //for (int i=0; i<nPoints; i++) 
       //	myfile >> points[i];
-      float data[nEta][nPoints];
+      std::vector < std::vector<float> > data;
+      //float data[nEta][nPoints];
+      float data_val;
       std::string temp;
       for (int i=0; i<nEta; i++) 
 	{
+	  std::vector < float> row;
 	  myfile >> temp;
 	  //std::cout << temp << std::endl;
 	  for (int j=0; j<nPoints; j++) 
 	    {
 	      myfile >> temp;
 	      myfile >> temp;
-	      myfile >> data[i][j]; 
+	      //myfile >> data[i][j]; 
+	      myfile >> data_val; 
+	      row.push_back(data_val);
 	      //  std::cout << data[i][j] << std::endl;
 	    }
+	  data.push_back(row);
 	}
       myfile.close();
       // CHECK:
@@ -59,9 +65,9 @@ using namespace std;
 	  cout << endl;
 	}
       
-      string legName[1] = {"<PU>: 50, int lumi: 0fb^{-1}"};
-      int colors[1] = {1};
-      formatEtaGraph(0,"energy resolution", legName, "Energy resolution, #sigma_{eff}(E)/E" ,colors,&data[0][0],nPoints);
+      string legName[3] = {"<PU>: 50, int lumi: 0fb^{-1}","<PU>: 140, int lumi: 1000fb^{-1}","<PU>: 140, int lumi: 3000fb^{-1}"};
+      int colors[3] = {1,2,4};
+      formatEtaGraph(0,"energy (SC) resolution", legName, "Energy resolution, #sigma_{eff}(E)/E" ,colors,data,nPoints,filename);
       return(0);
     }
 }
