@@ -1,7 +1,8 @@
 #include "root.cc"
 #include "params.h"
+#include <vector>
 
-void formatHisto(int logY, const char* legendTitle, string * legendNames, const char* xTitle, float xMin, float xMax, const char* yTitle, int *colors, TH1F** hist, const int nPoints const char* filename);
+void formatHisto(int logY, const char* legendTitle, string * legendNames, const char* xTitle, float xMin, float xMax, const char* yTitle, int *colors, TH1F** hist, const int nPoints, const char* filename);
 void formatHisto(int logY, const char* legendTitle, string * legendNames, const char* xTitle, float xMin, float xMax, const char* yTitle, int *colors, TH1F** hist, const int nPoints,const char* filename)
 {
   setTDRStyle1(1,1,0,logY);//gridX/Y, logX/Y
@@ -11,7 +12,9 @@ void formatHisto(int logY, const char* legendTitle, string * legendNames, const 
   TLegend* leg = new TLegend(0.20,0.65,0.45,0.90,legendTitle);
   leg->SetTextFont(62);
   leg->SetTextSize(0.03679144);
-  leg->SetFillColor(0);
+  leg->SetFillStyle(0);
+  leg->SetLineColor(0);
+  //leg->SetFillColor(0);
   
   for(int j=0; j<nPoints;j++)
     {
@@ -38,7 +41,6 @@ void formatHisto(int logY, const char* legendTitle, string * legendNames, const 
       leg->AddEntry(hist[j],ll,"pl");
     }
   
-  
   leg->Draw("same");
   
   c1->cd();
@@ -46,11 +48,12 @@ void formatHisto(int logY, const char* legendTitle, string * legendNames, const 
   T1.SetTextSize(.04014599);
   T1.SetNDC();
   T1.DrawLatex(0.45,0.95,"CMS Simulation Preliminary"); //follows x-axis and y-axis values for position...
+  /*
   T1.SetTextSize(.035);
   T1.DrawLatex(0.2,0.5,"Aging model sys uncert.: ~30%");
   T1.DrawLatex(0.2,0.45,"Run1 reconstruction");
   T1.DrawLatex(0.2,0.40,"Prompt photons");
-  
+  */
   char  ss1[50];
   sprintf(ss1,"PLOTS/%s.png",filename);
   std::cout << ss1 << std::endl;
@@ -61,9 +64,11 @@ void formatHisto(int logY, const char* legendTitle, string * legendNames, const 
 }
 
 //"Energy resolution, #sigma_{eff}(E)/E"
+
 /*used to format any graph which is produced with nEta points on the x-axis */
-void formatEtaGraph(int logY, const char* legendTitle, string * legendNames,const char * yTitle, int * colors, float *data[], const int nPoints );
-void formatEtaGraph(int logY, const char* legendTitle, string * legendNames,const char * yTitle, int * colors, float *data[], const int nPoints )
+
+void formatEtaGraph(int logY, const char* legendTitle, string * legendNames,const char * yTitle, int * colors, std::vector< std::vector<float> > &data, const int nPoints, const char* fileName );
+void formatEtaGraph(int logY, const char* legendTitle, string * legendNames,const char * yTitle, int * colors, std::vector< std::vector<float> > &data, const int nPoints, const char* fileName )
 {
 
   setTDRStyle1(1,1,0,logY);//gridX/Y, logX/Y
@@ -73,8 +78,13 @@ void formatEtaGraph(int logY, const char* legendTitle, string * legendNames,cons
   TLegend* leg = new TLegend(0.25,0.65,0.55,0.90,legendTitle);
   leg->SetTextFont(62);
   leg->SetTextSize(0.03679144);
-  leg->SetFillColor(0);
-
+  leg->SetFillStyle(0);
+  leg->SetLineColor(0);
+  /*
+  leg->SetLineColor(kBlue);
+  leg->SetLineColorAlpha(kBlue,0.0);
+  */
+  
   TGraph *gr_res[nPoints];
   for (int j=0; j<nPoints; j++)
     {
@@ -110,16 +120,19 @@ void formatEtaGraph(int logY, const char* legendTitle, string * legendNames,cons
     }
   leg->Draw("same");
   TLatex T1;
+  T1.SetNDC();
   T1.SetTextSize(.04014599);
-  T1.DrawLatex(1.0,0.25,"CMS Simulation Preliminary"); //follows x-axis and y-axis values for position...
+  T1.DrawLatex(.45,0.95,"CMS Simulation Preliminary"); //follows x-axis and y-axis values for position...
   T1.SetTextSize(.035);
-  T1.DrawLatex(0.2,0.08,"Aging model sys uncert.: ~30%");
-  T1.DrawLatex(0.2,0.07,"Run1 reconstruction");
-  T1.DrawLatex(0.2,0.06,"Prompt photons");
+  T1.DrawLatex(0.2,0.5,"Aging model sys uncert.: ~30%");
+  T1.DrawLatex(0.2,0.45,"Run1 reconstruction");
+  T1.DrawLatex(0.2,0.40,"Prompt photons, pT>30GeV");
   
-  string ss1="PLOTS/graph_test.png";
-  c1->SaveAs(ss1.c_str());
-  ss1="PLOTS/C/graph_test.C";
-  c1->SaveAs(ss1.c_str());
+  char ss1[50];
+  sprintf(ss1,"PLOTS/%s.png",fileName);
+  c1->SaveAs(ss1);
+  sprintf(ss1,"PLOTS/C/%s.C",fileName);
+  c1->SaveAs(ss1);
   c1->Clear();
 }
+
