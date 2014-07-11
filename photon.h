@@ -47,6 +47,7 @@ class higgs_gg {
   Float_t         e5[200];
   Float_t         r9[200];
   Float_t         sieie[200];
+  Float_t         hovere[200];
   Float_t         ecalIso[200];
   Float_t         hcalIso[200];
   Float_t         trkIso[200];
@@ -73,6 +74,7 @@ class higgs_gg {
   TBranch        *b_3x3_energy;
   TBranch        *b_r9;
   TBranch        *b_sieie;
+  TBranch        *b_hovere;
   TBranch        *b_ecalIso;
   TBranch        *b_hcalIso;
   TBranch        *b_trkIso;
@@ -173,6 +175,7 @@ void higgs_gg::Init(TTree *tree)
    fChain->SetBranchAddress("p3x3_energy", &e3, &b_3x3_energy);
    fChain->SetBranchAddress("pR9", &r9, &b_r9);
    fChain->SetBranchAddress("pSigmaIetaIeta", &sieie, &b_sieie);
+   fChain->SetBranchAddress("pHoverE", &hovere, &b_hovere);
    fChain->SetBranchAddress("p_ecalRecHitSumEtConeDR03", &ecalIso, &b_ecalIso);
    fChain->SetBranchAddress("p_hcalTowerSumEtConeDR03", &hcalIso, &b_hcalIso);
    fChain->SetBranchAddress("p_trkSumPtSolidConeDR03", &trkIso, &b_trkIso);
