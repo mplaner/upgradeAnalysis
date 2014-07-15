@@ -52,7 +52,7 @@ class higgs_gg {
   Float_t         hcalIso[200];
   Float_t         trkIso[200];
   Int_t           p_size;
-
+  Float_t        hovere[200];
   
   
   Double_t        GEN_eta[5];
@@ -89,9 +89,13 @@ class higgs_gg {
   TBranch        *b_run_number;
   TBranch        *b_lumi_number;
   TBranch        *b_event_number;
+  TBranch        *b_p_h_over_e;
   
   
+//  TFile *f; 
+//  TDirectory * dir = (TDirectory*)f->Get("ntuple_PU50_age_0.root:/demo");
   higgs_gg(TTree *tree);
+//  higgs_gg(TTree *tree,const TFile str);
   virtual ~higgs_gg();
   virtual Int_t     GetEntry(Long64_t entry);
   virtual Long64_t  LoadTree(Long64_t entry);
@@ -99,27 +103,34 @@ class higgs_gg {
   virtual int       GetEtaBin(double eta);
   };
 
-higgs_gg::higgs_gg(TTree *tree) : fChain(0)  
+ higgs_gg::higgs_gg(TTree *tree) : fChain(0)  
+// higgs_gg::higgs_gg(TTree *tree,const TFile str) : fChain(0)  
 {
+  //tes11t
+  //test111
   // used to generate this class and read the Tree.
   //for some reason, must open file first
   //std::cout << "in constructor " << std::endl;
   //  if (tree == 0) 
-  if (tree == 0) 
+/*  if (tree == 0) 
     {
       TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("ntuple_PU50_age_0.root");
-      if (!f || !f->IsOpen()) 
-	{
-	  f = new TFile("ntuple_PU50_age_0.root");
-	}
+   //   TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(str);
+   //   if (!f || !f->IsOpen()) 
+//	{
+	//  f = new TFile("ntuple_PU50_age_0.root");
+//	  f = new TFile(str);
+//	}
       TDirectory * dir = (TDirectory*)f->Get("ntuple_PU50_age_0.root:/demo");
+  //    TDirectory * dir = (TDirectory*)f->Get("ntuple_PU50_age_0.root:/demo");
       dir->GetObject("photon",tree);
       std::cout <<tree->GetEntries() << std::endl;
-    }
+    }*/
   std::cout << tree << std::endl;
   Init(tree);
   
   std::cout << "initialized tree " << std::endl;
+  return 0;
 }
 
 higgs_gg::~higgs_gg()
@@ -182,6 +193,7 @@ void higgs_gg::Init(TTree *tree)
    fChain->SetBranchAddress("pEta", &eta, &b_eta);
    fChain->SetBranchAddress("pPhi", &phi, &b_phi);
    fChain->SetBranchAddress("psize", &p_size, &b_p_size);
+   fChain->SetBranchAddress("pHoverE", &hovere, &b_p_h_over_e);
       
    
    fChain->SetBranchAddress("gEta", &GEN_eta, &b_g_eta);
