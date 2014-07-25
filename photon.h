@@ -8,23 +8,24 @@
 #ifndef higgs_gg_h
 #define higgs_gg_h
 
-
+#include "params.h"
 #include <string.h>
+#include <stdio.h>
 #include <TROOT.h>
 #include <TH2.h>
 #include <TH1.h>
-#include <TF1.h>
 #include <TGraph.h>
 #include <TGraphErrors.h>
-#include <TF1.h>
 #include <TTree.h>
 #include <TProfile.h>
 #include <TChain.h>
 #include <TFile.h>
+#include <TDirectory.h>
 #include <cmath>
 #include <TCanvas.h>
 #include <TStyle.h>
 
+#define NPHO 100
 // Header file for the classes stored in the TTree if any.
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
@@ -36,29 +37,34 @@ class higgs_gg {
   Int_t          fCurrent; //!current Tree number in  TChain
   
   // Declaration of leaf types
-  Float_t         ecalenergy[200];
-  Float_t         photonenergy[200];
-  Float_t         pt[200];
-  Double_t        esenergy[200];
-  Double_t        rawenergy[200];
-  Double_t        eta[200];
-  Double_t        phi[200];
-  Float_t         e3[200];
-  Float_t         e5[200];
-  Float_t         r9[200];
-  Float_t         sieie[200];
-  Float_t         hovere[200];
-  Float_t         ecalIso[200];
-  Float_t         hcalIso[200];
-  Float_t         trkIso[200];
+  Float_t         ecalenergy[NPHO];
+  Float_t         photonenergy[NPHO];
+  Float_t         pt[NPHO];
+  Double_t        esenergy[NPHO];
+  Double_t        rawenergy[NPHO];
+  Double_t        eta[NPHO];
+  Double_t        phi[NPHO];
+  Float_t         e3[NPHO];
+  Float_t         e5[NPHO];
+  Float_t         r9[NPHO];
+  Float_t         sieie[NPHO];
+  Float_t         hovere[NPHO];
+  Float_t         ecalIso[NPHO];
+  Float_t         hcalIso[NPHO];
+  Float_t         trkIso[NPHO];
   Int_t           p_size;
 
   
   
-  Double_t        GEN_eta[5];
-  Double_t        GEN_phi[5];
-  Float_t         GEN_pt[5];
-  Int_t           GEN_id[5];
+  Double_t        GEN_eta[NPHO];
+  Double_t        GEN_phi[NPHO];
+  Float_t         GEN_pt[NPHO];
+  Float_t         GEN_ePt[NPHO];
+  Float_t         GEN_pPt[NPHO];
+  Int_t           GEN_id[NPHO];
+  Bool_t          GEN_fromH[NPHO];
+  Int_t           isConv[NPHO];
+  Int_t           GEN_status[NPHO];
   Int_t           NGEN;
   Int_t           run_number;
   Int_t           lumi_number;
@@ -72,6 +78,8 @@ class higgs_gg {
   TBranch        *b_pt;
   TBranch        *b_5x5_energy;
   TBranch        *b_3x3_energy;
+  TBranch        *b_eta;   //!
+  TBranch        *b_phi;   //!
   TBranch        *b_r9;
   TBranch        *b_sieie;
   TBranch        *b_hovere;
@@ -79,13 +87,19 @@ class higgs_gg {
   TBranch        *b_hcalIso;
   TBranch        *b_trkIso;
   TBranch        *b_p_size;
+  
   TBranch        *b_g_eta;
   TBranch        *b_g_phi;
   TBranch        *b_g_pt;
+  TBranch        *b_g_ept;
+  TBranch        *b_g_ppt;
   TBranch        *b_g_size;
-  TBranch        *b_eta;   //!
-  TBranch        *b_phi;   //!
+  TBranch        *b_g_status;
+  TBranch        *b_gHDaughter;
   TBranch        *b_pdg_id;   //!
+  
+  TBranch        *b_isConv;
+  
   TBranch        *b_run_number;
   TBranch        *b_lumi_number;
   TBranch        *b_event_number;
@@ -96,7 +110,6 @@ class higgs_gg {
   virtual Int_t     GetEntry(Long64_t entry);
   virtual Long64_t  LoadTree(Long64_t entry);
   virtual void      Init(TTree *tree); //particle is particle id
-  virtual int       GetEtaBin(double eta);
   };
 
 higgs_gg::higgs_gg(TTree *tree) : fChain(0)  
@@ -107,13 +120,39 @@ higgs_gg::higgs_gg(TTree *tree) : fChain(0)
   //  if (tree == 0) 
   if (tree == 0) 
     {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("ntuple_PU50_age_0.root");
-      if (!f || !f->IsOpen()) 
+      TFile *f;
+      if(FILETYPE==4)
 	{
-	  f = new TFile("ntuple_PU50_age_0.root");
+	  f = new TFile("hgg_20_age20_ntuple.root");
 	}
-      TDirectory * dir = (TDirectory*)f->Get("ntuple_PU50_age_0.root:/demo");
-      dir->GetObject("photon",tree);
+      else if(FILETYPE==2)
+	{
+	  if(type==GJETS)
+	    f = new TFile("gjet_140_age1000_ntuple.root");
+	  else
+	    f = new TFile("hgg_140_age1000_ntuple.root");
+	}
+      else if(FILETYPE==3)
+	{
+	  if(type==GJETS)
+	    f = new TFile("gjet_140_age3000_ntuple.root");
+	  else
+	    f = new TFile("hgg_140_age3000_ntuple.root");
+	}
+      else
+	{
+	  if(type==GJETS)
+	    f = new TFile("gjet_70_age0_ntuple.root");
+	  else
+	    f = new TFile("hgg_70_age0_ntuple.root");
+	}
+      
+      
+      gDirectory->ls();
+      gDirectory->cd("ntuple");
+      //TDirectory * dir = (TDirectory*)f->Get("hgg_20_age20_ntuple.root:/ntuple");
+      //std::cout << "in ntuple: " << std::endl;
+      gDirectory->GetObject("photon",tree);
       std::cout <<tree->GetEntries() << std::endl;
     }
   std::cout << tree << std::endl;
@@ -186,11 +225,17 @@ void higgs_gg::Init(TTree *tree)
    
    fChain->SetBranchAddress("gEta", &GEN_eta, &b_g_eta);
    fChain->SetBranchAddress("gPhi", &GEN_phi, &b_g_phi);
-   
-   fChain->SetBranchAddress("gsize", &NGEN, &b_g_size);
+   fChain->SetBranchAddress("gHdaughter",&GEN_fromH, &b_gHDaughter);
+   fChain->SetBranchAddress("gConv", &isConv, &b_isConv);
+   fChain->SetBranchAddress("gStatus", &GEN_status, &b_g_status);
+   fChain->SetBranchAddress("gStatus", &GEN_status, &b_g_status);
    fChain->SetBranchAddress("pdgid", &GEN_id, &b_pdg_id);
+   fChain->SetBranchAddress("gePt", &GEN_ePt, &b_g_ept);
+   fChain->SetBranchAddress("gpPt", &GEN_pPt, &b_g_ppt);
    fChain->SetBranchAddress("gPt", &GEN_pt, &b_g_pt);
-      
+   fChain->SetBranchAddress("gsize", &NGEN, &b_g_size);
+   
+   
    std::cout << "branches loaded " << std::endl;
 }
 #endif
