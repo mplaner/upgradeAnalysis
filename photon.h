@@ -120,39 +120,48 @@ higgs_gg::higgs_gg(TTree *tree) : fChain(0)
   //  if (tree == 0) 
   if (tree == 0) 
     {
-      TFile *f;
+
       if(FILETYPE==4)
 	{
-	  f = new TFile("hgg_20_age20_ntuple.root");
+	  const char * fname = "hgg_20_age20_ntuple.root";
 	}
       else if(FILETYPE==2)
 	{
 	  if(type==GJETS)
-	    f = new TFile("gjet_140_age1000_ntuple.root");
+	    const char * fname = "gjet_140_age1000_ntuple.root";
 	  else
-	    f = new TFile("hgg_140_age1000_ntuple.root");
+	    const char * fname = "hgg_140_age1000_ntuple.root";
 	}
       else if(FILETYPE==3)
 	{
 	  if(type==GJETS)
-	    f = new TFile("gjet_140_age3000_ntuple.root");
+	    const char * fname = "gjet_140_age3000_ntuple.root";
 	  else
-	    f = new TFile("hgg_140_age3000_ntuple.root");
+	    const char * fname = "hgg_140_age3000_ntuple.root";
+	  
 	}
       else
 	{
 	  if(type==GJETS)
-	    f = new TFile("gjet_70_age0_ntuple.root");
+	    const char * fname = "gjet_70_age0_ntuple.root";
 	  else
-	    f = new TFile("hgg_70_age0_ntuple.root");
+	    const char * fname = "hgg_70_age0_ntuple.root";
 	}
-      
-      
-      gDirectory->ls();
-      gDirectory->cd("ntuple");
+      std::cout << "opening file: " << fname << std::endl;
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(fname);
+      if (!f || !f->IsOpen()) 
+	{
+	  //gDirectory->ls();
+	  //std::cout << "file not yet open " << std::endl;
+	  TFile *f = new TFile(fname);
+	  //TFile *f = new TFile("hgg_20_age20_ntuple.root","READ");
+	  //std::cout << "opened file: " << fname << std::endl;
+	}
+      sprintf(fname, "%s:/ntuple",fname);
+      TDirectory * dir = (TDirectory*)f->Get(fname);
       //TDirectory * dir = (TDirectory*)f->Get("hgg_20_age20_ntuple.root:/ntuple");
       //std::cout << "in ntuple: " << std::endl;
-      gDirectory->GetObject("photon",tree);
+      dir->GetObject("photon",tree);
       std::cout <<tree->GetEntries() << std::endl;
     }
   std::cout << tree << std::endl;

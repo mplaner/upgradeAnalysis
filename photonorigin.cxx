@@ -12,21 +12,17 @@
 #include <TCanvas.h>
 
 
-//void Loop();
-int uphoton()
+void Loop();
+int main()
 {
-  TFile *file1=TFile::Open("ntuple_PU50_age_0.root");
-  TTree *t1 = (TTree*)file1->Get("demo/photon"); 
-  Loop(t1);
+  Loop();
 }
 
-//void Loop (TTree *tree1,int plotnum)
-void Loop (TTree *tree1)
+void Loop()
 {
-//  TDirectory  file1_="ntuple_PU50_age_0.root:/demo"; 
+  
   TH1F * r9EBHist[2];
   TH1F * r9EEHist[2];
-  TH1F * r9EEsleHist[2];
   TH1F * hovereEBHist[2];
   TH1F * hovereEEHist[2];
   TH1F * sigmIetIetaEBHist[2];
@@ -37,10 +33,9 @@ void Loop (TTree *tree1)
   TH1F *etaHist;
   TH1F *ratio_ptHist[nEta];
   vector <float> ratio_ptVect[nEta];
-//  TTree *b=0;
-//  TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("ntuple_PU50_age_0.root");
- // higgs_gg * h = new higgs_gg(b,file1);
-  higgs_gg * h = new higgs_gg(tree1);
+  TTree *b=0;
+
+  higgs_gg * h = new higgs_gg(b);
   
   int PARENT   =0;
   int CHILD    =0;
@@ -56,8 +51,6 @@ void Loop (TTree *tree1)
   r9EBHist[1]=new TH1F("hname1","hname1",60,0,1.2);
   r9EEHist[0]=new TH1F("hname_","hname_",60,0,1.2);
   r9EEHist[1]=new TH1F("hname_1","hname_1",60,0,1.2);
-  r9EEsleHist[0]=new TH1F("hname__","hname_",60,0,1.2);
-  r9EEsleHist[1]=new TH1F("hname_11","hname_",60,0,1.2);
   hovereEBHist[0]=new TH1F("hname2","hname2",100,-0.1,0.9);
   hovereEBHist[1]=new TH1F("hname3","hname3",100,-0.1,0.9);
   hovereEEHist[0]=new TH1F("hname_2","hname_2",100,-0.1,0.9);
@@ -147,16 +140,16 @@ void Loop (TTree *tree1)
        for(int i=0; i<nPhotons; i++)
 	 {
 	   /***sets pt=0 if in gap****/
-	   if(std::abs(g_eta[i])>EBMAX&& std::abs(g_eta[i])<EEMIN)
+	   if(std::fabs(g_eta[i])>EBMAX&& std::fabs(g_eta[i])<EEMIN)
 	     g_pt[i]=0;
 	   /***set pt=0 if outside detector***/
-	   if(std::abs(g_eta[i])>EEMAX)
+	   if(std::fabs(g_eta[i])>EEMAX)
 	     g_pt[i]=0;
 	   //	   if(std::abs(g_eta[i])<EBMAX)
 	   // g_pt[i]=0;
 	   if(g_pt[i]>0)
 	     {
-	       if(std::abs(g_eta[i])>EEMIN)
+	       if(std::fabs(g_eta[i])>EEMIN)
                      nGEE++;
 	       if(std::abs(g_eta[i])<EBMAX)
  		    nGEB++;
@@ -272,17 +265,8 @@ void Loop (TTree *tree1)
    formatHisto(0,"<PU>: 50, SigmaIetaIeta EB DISTRIBUTION",legendname," #SigmaIetaIeta of photons",0,0.1,"PDF", colors,&sigmIetIetaEBHist[0],2,"sigmaIetaIetapEBlot");
    formatHisto(0,"<PU>: 50, SigmaIetaIeta EE DISTRIBUTION",legendname," #SigmaIetaIeta of photons",0,0.1,"PDF", colors,&sigmIetIetaEEHist[0],2,"sigmaIetaIetapEElot");
  //  r9Hist->Write();
-//   formatHisto(0,"<PU>: 50, int lumi: 0fb^{-1}", legName, "#eta of matched reco photons",-3.2,3.2,"PDF", colors,&etaHist,1, "etaplot");
+   formatHisto(0,"<PU>: 50, int lumi: 0fb^{-1}", legName, "#eta of matched reco photons",-3.2,3.2,"PDF", colors,&etaHist,1, "etaplot");
    //formatHisto(0, "legendary", legName);
-   Float_t sum = 0;
-   for (Int_t i=1;i<=60;i++)
-   {
-       sum +=r9EEHist[0]->GetBinContent(i);
-       r9EEsleHist[0]->SetBinContent(i,sum);
-   }
-   r9EEsleHist[0]->Clear();
-   r9EEsleHist[0]->Draw();
-    
 //   r9Hist1->Draw();
  //  r9Hist->Draw();
    temp->Close();
