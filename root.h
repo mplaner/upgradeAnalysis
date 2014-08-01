@@ -22,7 +22,6 @@
 #include "TGraph.h"
 #include "TGraphErrors.h"
 #include "TStyle.h"
-#include "TF1.h"
 #include "TCanvas.h"
 #include "TPad.h"
 #include "TLatex.h"
